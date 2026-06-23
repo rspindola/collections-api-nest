@@ -10,13 +10,19 @@ export class UpsertUserBookDto {
   bookId: number;
 
   @ApiPropertyOptional({ example: true })
-  @Transform(({ value }) => value === 'true' || value === true || value === 1 || value === '1')
+  @Transform(
+    ({ value }) =>
+      value === 'true' || value === true || value === 1 || value === '1',
+  )
   @IsBoolean()
   @IsOptional()
   hasRead?: boolean;
 
   @ApiPropertyOptional({ example: false })
-  @Transform(({ value }) => value === 'true' || value === true || value === 1 || value === '1')
+  @Transform(
+    ({ value }) =>
+      value === 'true' || value === true || value === 1 || value === '1',
+  )
   @IsBoolean()
   @IsOptional()
   haveBought?: boolean;

@@ -20,9 +20,10 @@ export interface StandardResponse<T> {
  * Equivalente ao BaseController::sendResponse() do Laravel.
  */
 @Injectable()
-export class ResponseInterceptor<T>
-  implements NestInterceptor<T, StandardResponse<T>>
-{
+export class ResponseInterceptor<T> implements NestInterceptor<
+  T,
+  StandardResponse<T>
+> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,

@@ -13,7 +13,10 @@ export class CategoriesService {
   async getAll(pagination: PaginationDto): Promise<PaginatedResult<any>> {
     const page = pagination.page || 1;
     const limit = pagination.limit || 15;
-    const [data, total] = await this.categoriesRepository.findPaginated(page, limit);
+    const [data, total] = await this.categoriesRepository.findPaginated(
+      page,
+      limit,
+    );
 
     return {
       data,

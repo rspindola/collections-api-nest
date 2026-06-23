@@ -32,7 +32,10 @@ import jwtConfig from './config/jwt.config';
         port: configService.get<number>('database.port', 3306),
         username: configService.get<string>('database.username', 'root'),
         password: configService.get<string>('database.password', ''),
-        database: configService.get<string>('database.database', 'collections_db'),
+        database: configService.get<string>(
+          'database.database',
+          'collections_db',
+        ),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
