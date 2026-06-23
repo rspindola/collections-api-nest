@@ -14,7 +14,10 @@ export class CollectionsRepository {
     return this.repo.find();
   }
 
-  async findPaginated(page: number, limit: number): Promise<[Collection[], number]> {
+  async findPaginated(
+    page: number,
+    limit: number,
+  ): Promise<[Collection[], number]> {
     return this.repo.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

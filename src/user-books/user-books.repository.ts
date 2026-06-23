@@ -10,7 +10,11 @@ export class UserBooksRepository {
     private readonly repo: Repository<UserBook>,
   ) {}
 
-  async upsert(userId: number, bookId: number, data: { hasRead?: boolean; haveBought?: boolean }): Promise<UserBook> {
+  async upsert(
+    userId: number,
+    bookId: number,
+    data: { hasRead?: boolean; haveBought?: boolean },
+  ): Promise<UserBook> {
     let userBook = await this.repo.findOne({ where: { userId, bookId } });
     if (userBook) {
       if (data.hasRead !== undefined) userBook.hasRead = data.hasRead;

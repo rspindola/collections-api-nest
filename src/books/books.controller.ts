@@ -22,9 +22,14 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { multerOptions } from './config/multer.config';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+} from '@nestjs/swagger';
 
 @ApiTags('Book')
 @ApiBearerAuth()
@@ -52,19 +57,7 @@ export class BooksController {
   @ApiOperation({ summary: 'Store new book' })
   @ApiResponse({ status: 201, description: 'Successfully created book.' })
   @ApiResponse({ status: 422, description: 'Validation error.' })
-  @UseInterceptors(
-    FileInterceptor('cover', {
-      storage: diskStorage({
-        destination: './uploads/covers',
-        filename: (req, file, cb) => {
-          const originalName = file.originalname.split('.')[0].replace(/\s+/g, '_');
-          const timestamp = Date.now();
-          const ext = extname(file.originalname);
-          cb(null, `${originalName}_${timestamp}${ext}`);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('cover', multerOptions))
   async store(
     @Body() dto: CreateBookDto,
     @UploadedFile() file?: Express.Multer.File,
@@ -96,19 +89,7 @@ export class BooksController {
   @ApiOperation({ summary: 'Update existing book' })
   @ApiResponse({ status: 200, description: 'Successful operation.' })
   @ApiResponse({ status: 404, description: 'Resource Not Found.' })
-  @UseInterceptors(
-    FileInterceptor('cover', {
-      storage: diskStorage({
-        destination: './uploads/covers',
-        filename: (req, file, cb) => {
-          const originalName = file.originalname.split('.')[0].replace(/\s+/g, '_');
-          const timestamp = Date.now();
-          const ext = extname(file.originalname);
-          cb(null, `${originalName}_${timestamp}${ext}`);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('cover', multerOptions))
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateBookDto,
