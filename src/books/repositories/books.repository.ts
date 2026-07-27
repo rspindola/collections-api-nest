@@ -21,7 +21,12 @@ export class BooksRepository {
   ): Promise<[Book[], number]> {
     const qb = this.repo.createQueryBuilder('book');
 
-    qb.leftJoinAndSelect('book.userBooks', 'userBook', 'userBook.userId = :userId', { userId })
+    qb.leftJoinAndSelect(
+      'book.userBooks',
+      'userBook',
+      'userBook.userId = :userId',
+      { userId },
+    )
       .orderBy('book.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit);
@@ -40,8 +45,12 @@ export class BooksRepository {
   async getByIdWithUserStatus(id: number, userId: number): Promise<Book> {
     const qb = this.repo.createQueryBuilder('book');
 
-    qb.leftJoinAndSelect('book.userBooks', 'userBook', 'userBook.userId = :userId', { userId })
-      .where('book.id = :id', { id });
+    qb.leftJoinAndSelect(
+      'book.userBooks',
+      'userBook',
+      'userBook.userId = :userId',
+      { userId },
+    ).where('book.id = :id', { id });
 
     const book = await qb.getOne();
     if (!book) {

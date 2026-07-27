@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BooksRepository } from './repositories/books.repository';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -18,7 +18,10 @@ export class BooksService {
 
   private formatBookCover(book: Book): Book {
     if (book && book.cover) {
-      const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:3000');
+      const appUrl = this.configService.get<string>(
+        'APP_URL',
+        'http://localhost:3000',
+      );
       // If it doesn't already have http, prefix it with the asset storage path
       if (!book.cover.startsWith('http')) {
         book.cover = `${appUrl}/storage/${book.cover}`;
@@ -30,12 +33,13 @@ export class BooksService {
   private formatBook(book: Book): any {
     if (!book) return book;
     const formatted = this.formatBookCover(book);
-    const userBook = book.userBooks && book.userBooks.length > 0 ? book.userBooks[0] : null;
+    const userBook =
+      book.userBooks && book.userBooks.length > 0 ? book.userBooks[0] : null;
     const userStatus = userBook
       ? { hasRead: userBook.hasRead, haveBought: userBook.haveBought }
       : { hasRead: false, haveBought: false };
 
-    const { userBooks, ...rest } = formatted as any;
+    const { userBooks: _, ...rest } = formatted as any;
     return {
       ...rest,
       userStatus,
@@ -49,15 +53,23 @@ export class BooksService {
       // physical path is 'uploads/covers/filename.ext'
       const fullPath = join(process.cwd(), 'uploads', coverPath);
       await fs.unlink(fullPath);
-    } catch (error) {
+    } catch {
       // File might not exist or already be deleted, ignore error
     }
   }
 
-  async getAll(userId: number, pagination: PaginationDto): Promise<PaginatedResult<any>> {
+  async getAll(
+    userId: number,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResult<any>> {
     const page = pagination.page || 1;
     const limit = pagination.limit || 15;
-    const [data, total] = await this.booksRepository.findPaginatedWithUserStatus(userId, page, limit);
+    const [data, total] =
+      await this.booksRepository.findPaginatedWithUserStatus(
+        userId,
+        page,
+        limit,
+      );
 
     return {
       data: data.map((book) => this.formatBook(book)),
@@ -90,7 +102,11 @@ export class BooksService {
     return this.formatBook(book);
   }
 
-  async update(id: number, dto: UpdateBookDto, newCoverFilename?: string): Promise<any> {
+  async update(
+    id: number,
+    dto: UpdateBookDto,
+    newCoverFilename?: string,
+  ): Promise<any> {
     const book = await this.booksRepository.getById(id);
     const { collection_id, publishedAt, ...rest } = dto;
 

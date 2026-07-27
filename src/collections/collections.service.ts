@@ -13,7 +13,10 @@ export class CollectionsService {
   async getAll(pagination: PaginationDto): Promise<PaginatedResult<any>> {
     const page = pagination.page || 1;
     const limit = pagination.limit || 15;
-    const [data, total] = await this.collectionsRepository.findPaginated(page, limit);
+    const [data, total] = await this.collectionsRepository.findPaginated(
+      page,
+      limit,
+    );
 
     return {
       data,

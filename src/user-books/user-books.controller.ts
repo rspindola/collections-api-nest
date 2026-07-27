@@ -10,7 +10,12 @@ import {
 import { UserBooksService } from './user-books.service';
 import { UpsertUserBookDto } from './dto/upsert-user-book.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @ApiTags('User Book Status')
 @ApiBearerAuth()
@@ -20,7 +25,10 @@ export class UserBooksController {
   constructor(private readonly userBooksService: UserBooksService) {}
 
   @Put()
-  @ApiOperation({ summary: 'Create or update book status (hasRead/haveBought) for logged in user' })
+  @ApiOperation({
+    summary:
+      'Create or update book status (hasRead/haveBought) for logged in user',
+  })
   @ApiResponse({ status: 200, description: 'Book status updated.' })
   async upsert(@Request() req: any, @Body() dto: UpsertUserBookDto) {
     const result = await this.userBooksService.upsert(req.user.id, dto);
@@ -32,7 +40,9 @@ export class UserBooksController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all book statuses for current user (My Collection page)' })
+  @ApiOperation({
+    summary: 'Get all book statuses for current user (My Collection page)',
+  })
   @ApiResponse({ status: 200, description: 'List of user book statuses.' })
   async index(@Request() req: any) {
     const result = await this.userBooksService.findByUser(req.user.id);

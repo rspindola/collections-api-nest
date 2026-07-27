@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -65,9 +69,14 @@ export class UsersService {
 
     if (dto.password) {
       if (!dto.currentPassword) {
-        throw new BadRequestException('Current password is required to set a new password');
+        throw new BadRequestException(
+          'Current password is required to set a new password',
+        );
       }
-      const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        dto.currentPassword,
+        user.password,
+      );
       if (!isPasswordValid) {
         throw new BadRequestException('Incorrect current password');
       }

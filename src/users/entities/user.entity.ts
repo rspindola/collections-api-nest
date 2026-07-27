@@ -23,7 +23,12 @@ export class User {
   @Column({ name: 'email_verified_at', type: 'timestamp', nullable: true })
   emailVerifiedAt: Date | null;
 
-  @Column({ name: 'remember_token', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'remember_token',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   rememberToken: string | null;
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
