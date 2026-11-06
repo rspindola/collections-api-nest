@@ -1,4 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiHideProperty,
+} from '@nestjs/swagger';
 
 export class PaginationMetaDto {
   @ApiProperty({ example: 42, description: 'Total de registros disponíveis' })
@@ -30,6 +34,7 @@ export class StandardResponseDto<T = any> {
   })
   message: string;
 
+  @ApiHideProperty()
   data?: T;
 }
 
@@ -40,6 +45,7 @@ export class PaginatedResponseDto<T = any> {
   })
   success: boolean;
 
+  @ApiHideProperty()
   data: T[];
 
   @ApiProperty({
@@ -68,7 +74,10 @@ export class ErrorResponseDto {
   })
   message: string;
 
-  @ApiProperty({ example: {}, description: 'Detalhes adicionais do erro' })
+  @ApiPropertyOptional({
+    example: {},
+    description: 'Detalhes adicionais do erro',
+  })
   data: any;
 }
 

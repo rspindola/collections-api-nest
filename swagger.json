@@ -1889,8 +1889,7 @@
         },
         "required": [
           "success",
-          "message",
-          "data"
+          "message"
         ]
       },
       "StandardResponseDto": {
