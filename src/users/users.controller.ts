@@ -10,17 +10,25 @@ import {
 import { UsersService } from './users.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
+import {
+  ApiStandardResponse,
+  ApiValidationErrorResponse,
+  ApiNotFoundResponse,
+  ApiAuthUnauthorizedResponse,
+  ApiForbiddenAccessResponse,
+} from '../common/swagger';
 
-@ApiTags('User')
+@ApiTags('Users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
@@ -29,8 +37,19 @@ export class UsersController {
 
   @Get()
   @Roles('admin')
-  @ApiOperation({ summary: 'List all users (Admin only)' })
-  @ApiResponse({ status: 200, description: 'List of users returned.' })
+  @ApiOperation({
+    summary: 'Listar todos os usuários (Admin)',
+    description:
+      'Retorna a lista de todos os usuários registrados no sistema. Exige permissão de administrador.',
+  })
+  @ApiStandardResponse({
+    type: UserResponseDto,
+    dataKey: 'users',
+    isArray: true,
+    description: 'Lista de usuários retornada com sucesso.',
+  })
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async index() {
     const result = await this.usersService.findAll();
     return {
@@ -42,9 +61,26 @@ export class UsersController {
 
   @Put(':id/role')
   @Roles('admin')
-  @ApiOperation({ summary: 'Update user role (Admin only)' })
-  @ApiResponse({ status: 200, description: 'User role updated successfully.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
+  @ApiOperation({
+    summary: 'Alterar permissão de um usuário (Admin)',
+    description:
+      'Atualiza o papel (role) de um usuário específico para `user` ou `admin`. Exige permissão de administrador.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico do usuário',
+  })
+  @ApiStandardResponse({
+    type: UserResponseDto,
+    dataKey: 'user',
+    description: 'Permissão do usuário alterada com sucesso.',
+  })
+  @ApiNotFoundResponse('Usuário não encontrado.')
+  @ApiValidationErrorResponse('Valor de role inválido.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async updateRole(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
     const result = await this.usersService.updateRole(+id, dto.role);
     return {
@@ -60,8 +96,17 @@ export class UsersController {
   }
 
   @Get('profile')
-  @ApiOperation({ summary: 'Get current user profile' })
-  @ApiResponse({ status: 200, description: 'User profile returned.' })
+  @ApiOperation({
+    summary: 'Consultar perfil do usuário autenticado',
+    description:
+      'Retorna os dados cadastrais da conta do usuário atualmente autenticado.',
+  })
+  @ApiStandardResponse({
+    type: UserResponseDto,
+    dataKey: 'user',
+    description: 'Perfil do usuário retornado com sucesso.',
+  })
+  @ApiAuthUnauthorizedResponse()
   async profile(@Request() req: any) {
     const user = await this.usersService.findById(req.user.id);
     // Remove password
@@ -74,9 +119,18 @@ export class UsersController {
   }
 
   @Put('profile')
-  @ApiOperation({ summary: 'Update current user profile' })
-  @ApiResponse({ status: 200, description: 'Profile updated successfully.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiOperation({
+    summary: 'Atualizar perfil do usuário autenticado',
+    description:
+      'Permite ao usuário conectado atualizar seu nome, e-mail e alterar sua senha fornecendo a senha atual.',
+  })
+  @ApiStandardResponse({
+    type: UserResponseDto,
+    dataKey: 'user',
+    description: 'Perfil atualizado com sucesso.',
+  })
+  @ApiValidationErrorResponse('Dados inválidos ou senha atual incorreta.')
+  @ApiAuthUnauthorizedResponse()
   async updateProfile(@Request() req: any, @Body() dto: UpdateProfileDto) {
     const result = await this.usersService.updateProfile(req.user.id, dto);
     return {

@@ -9,15 +9,22 @@ import {
 } from '@nestjs/common';
 import { UserBooksService } from './user-books.service';
 import { UpsertUserBookDto } from './dto/upsert-user-book.dto';
+import { UserBookResponseDto } from './dto/user-book-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
+import {
+  ApiStandardResponse,
+  ApiValidationErrorResponse,
+  ApiNotFoundResponse,
+  ApiAuthUnauthorizedResponse,
+} from '../common/swagger';
 
-@ApiTags('User Book Status')
+@ApiTags('User Books')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('user-books')
@@ -26,10 +33,17 @@ export class UserBooksController {
 
   @Put()
   @ApiOperation({
-    summary:
-      'Create or update book status (hasRead/haveBought) for logged in user',
+    summary: 'Registrar ou atualizar status do livro (Lido / Comprado)',
+    description:
+      'Salva ou altera o status de leitura (`hasRead`) e posse (`haveBought`) de um determinado livro para o usuário logado.',
   })
-  @ApiResponse({ status: 200, description: 'Book status updated.' })
+  @ApiStandardResponse({
+    type: UserBookResponseDto,
+    dataKey: 'userBook',
+    description: 'Status do livro salvo com sucesso.',
+  })
+  @ApiValidationErrorResponse('Dados inválidos para o registro de status.')
+  @ApiAuthUnauthorizedResponse()
   async upsert(@Request() req: any, @Body() dto: UpsertUserBookDto) {
     const result = await this.userBooksService.upsert(req.user.id, dto);
     return {
@@ -41,9 +55,17 @@ export class UserBooksController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get all book statuses for current user (My Collection page)',
+    summary: 'Listar estante pessoal do usuário logado',
+    description:
+      'Retorna a lista de todos os livros marcados como lidos ou comprados pelo usuário autenticado.',
   })
-  @ApiResponse({ status: 200, description: 'List of user book statuses.' })
+  @ApiStandardResponse({
+    type: UserBookResponseDto,
+    dataKey: 'userBooks',
+    isArray: true,
+    description: 'Lista de status de livros retornada com sucesso.',
+  })
+  @ApiAuthUnauthorizedResponse()
   async index(@Request() req: any) {
     const result = await this.userBooksService.findByUser(req.user.id);
     return {
@@ -54,8 +76,24 @@ export class UserBooksController {
   }
 
   @Get(':bookId')
-  @ApiOperation({ summary: 'Get current user status for a specific book' })
-  @ApiResponse({ status: 200, description: 'Book status returned.' })
+  @ApiOperation({
+    summary: 'Buscar status do usuário para um livro específico',
+    description:
+      'Retorna se o usuário autenticado já leu ou comprou o livro com o ID informado.',
+  })
+  @ApiParam({
+    name: 'bookId',
+    type: Number,
+    example: 1,
+    description: 'ID numérico do livro',
+  })
+  @ApiStandardResponse({
+    type: UserBookResponseDto,
+    dataKey: 'userBook',
+    description: 'Status do livro retornado com sucesso.',
+  })
+  @ApiNotFoundResponse('Status não encontrado para o livro especificado.')
+  @ApiAuthUnauthorizedResponse()
   async show(@Request() req: any, @Param('bookId') bookId: string) {
     const result = await this.userBooksService.findOne(req.user.id, +bookId);
     return {

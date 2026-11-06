@@ -18,6 +18,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import {
+  CreateBookUploadDto,
+  UpdateBookUploadDto,
+} from './dto/book-upload.dto';
+import { BookResponseDto } from './dto/book-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -26,12 +31,21 @@ import { multerOptions } from './config/multer.config';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiConsumes,
+  ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
+import {
+  ApiStandardResponse,
+  ApiPaginatedResponse,
+  ApiValidationErrorResponse,
+  ApiNotFoundResponse,
+  ApiAuthUnauthorizedResponse,
+  ApiForbiddenAccessResponse,
+} from '../common/swagger';
 
-@ApiTags('Book')
+@ApiTags('Books')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('books')
@@ -39,8 +53,15 @@ export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get list of books' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
+  @ApiOperation({
+    summary: 'Listar livros com paginação',
+    description:
+      'Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado.',
+  })
+  @ApiPaginatedResponse(BookResponseDto, {
+    description: 'Lista paginada de livros retornada com sucesso.',
+  })
+  @ApiAuthUnauthorizedResponse()
   async index(@Request() req: any, @Query() pagination: PaginationDto) {
     const result = await this.booksService.getAll(req.user.id, pagination);
     return {
@@ -54,9 +75,24 @@ export class BooksController {
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Store new book' })
-  @ApiResponse({ status: 201, description: 'Successfully created book.' })
-  @ApiResponse({ status: 422, description: 'Validation error.' })
+  @ApiOperation({
+    summary: 'Cadastrar novo livro com capa (Admin)',
+    description:
+      'Cria um novo livro associado a uma coleção e permite upload opcional de capa. Exige perfil de administrador.',
+  })
+  @ApiBody({
+    type: CreateBookUploadDto,
+    description: 'Campos do livro e arquivo de imagem para capa.',
+  })
+  @ApiStandardResponse({
+    type: BookResponseDto,
+    status: HttpStatus.CREATED,
+    dataKey: 'book',
+    description: 'Livro criado com sucesso.',
+  })
+  @ApiValidationErrorResponse('Dados inválidos para cadastro do livro.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   @UseInterceptors(FileInterceptor('cover', multerOptions))
   async store(
     @Body() dto: CreateBookDto,
@@ -71,24 +107,61 @@ export class BooksController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get book information' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Buscar detalhes de um livro por ID',
+    description:
+      'Retorna os dados completos do livro e o status de leitura/posse do usuário autenticado.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico do livro',
+  })
+  @ApiStandardResponse({
+    type: BookResponseDto,
+    dataKey: 'book',
+    description: 'Detalhes do livro retornados com sucesso.',
+  })
+  @ApiNotFoundResponse('Livro não encontrado com o ID informado.')
+  @ApiAuthUnauthorizedResponse()
   async show(@Request() req: any, @Param('id') id: string) {
     const result = await this.booksService.getById(+id, req.user.id);
     return {
       success: true,
       book: result,
-      message: 'Successfully created show', // keeping Laravel's message format
+      message: 'Successfully created show',
     };
   }
 
   @Put(':id')
   @Roles('admin')
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Update existing book' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Atualizar livro existente (Admin)',
+    description:
+      'Atualiza os dados de um livro e opcionalmente substitui a imagem da capa. Exige perfil de administrador.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico do livro',
+  })
+  @ApiBody({
+    type: UpdateBookUploadDto,
+    description:
+      'Campos para atualização do livro e novo arquivo de capa opcional.',
+  })
+  @ApiStandardResponse({
+    type: BookResponseDto,
+    dataKey: 'book',
+    description: 'Livro atualizado com sucesso.',
+  })
+  @ApiNotFoundResponse('Livro não encontrado.')
+  @ApiValidationErrorResponse('Dados inválidos para atualização.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   @UseInterceptors(FileInterceptor('cover', multerOptions))
   async update(
     @Param('id') id: string,
@@ -105,9 +178,25 @@ export class BooksController {
 
   @Delete(':id')
   @Roles('admin')
-  @ApiOperation({ summary: 'Delete existing book' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Remover livro do catálogo (Admin)',
+    description:
+      'Exclui permanentemente um livro e remove o arquivo físico da capa. Exige perfil de administrador.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico do livro',
+  })
+  @ApiStandardResponse({
+    type: BookResponseDto,
+    dataKey: 'book',
+    description: 'Livro removido com sucesso.',
+  })
+  @ApiNotFoundResponse('Livro não encontrado.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async destroy(@Param('id') id: string) {
     const result = await this.booksService.delete(+id);
     return {

@@ -14,6 +14,7 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryResponseDto } from './dto/category-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -21,11 +22,19 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
+import {
+  ApiStandardResponse,
+  ApiPaginatedResponse,
+  ApiValidationErrorResponse,
+  ApiNotFoundResponse,
+  ApiAuthUnauthorizedResponse,
+  ApiForbiddenAccessResponse,
+} from '../common/swagger';
 
-@ApiTags('Category')
+@ApiTags('Categories')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('categories')
@@ -33,8 +42,14 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get list of categories' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
+  @ApiOperation({
+    summary: 'Listar categorias',
+    description: 'Retorna a lista paginada de todas as categorias cadastradas.',
+  })
+  @ApiPaginatedResponse(CategoryResponseDto, {
+    description: 'Lista paginada de categorias retornada com sucesso.',
+  })
+  @ApiAuthUnauthorizedResponse()
   async index(@Query() pagination: PaginationDto) {
     const result = await this.categoriesService.getAll(pagination);
     return {
@@ -47,10 +62,20 @@ export class CategoriesController {
   @Post()
   @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Store new category' })
-  @ApiResponse({ status: 201, description: 'Successfully created category.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 422, description: 'Validation error.' })
+  @ApiOperation({
+    summary: 'Criar nova categoria (Admin)',
+    description:
+      'Cadastra uma nova categoria no sistema. Exige permissão de administrador.',
+  })
+  @ApiStandardResponse({
+    type: CategoryResponseDto,
+    status: HttpStatus.CREATED,
+    dataKey: 'category',
+    description: 'Categoria criada com sucesso.',
+  })
+  @ApiValidationErrorResponse('Dados inválidos para criação da categoria.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async store(@Body() dto: CreateCategoryDto) {
     const result = await this.categoriesService.store(dto);
     return {
@@ -61,9 +86,23 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category information' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Buscar categoria por ID',
+    description: 'Retorna os detalhes de uma categoria específica.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico da categoria',
+  })
+  @ApiStandardResponse({
+    type: CategoryResponseDto,
+    dataKey: 'category',
+    description: 'Categoria encontrada com sucesso.',
+  })
+  @ApiNotFoundResponse('Categoria não encontrada com o ID informado.')
+  @ApiAuthUnauthorizedResponse()
   async show(@Param('id') id: string) {
     const result = await this.categoriesService.getById(+id);
     return {
@@ -76,9 +115,27 @@ export class CategoriesController {
   @Put(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.ACCEPTED)
-  @ApiOperation({ summary: 'Update existing category' })
-  @ApiResponse({ status: 202, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Atualizar categoria (Admin)',
+    description:
+      'Atualiza o nome e slug de uma categoria existente. Exige permissão de administrador.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico da categoria a ser atualizada',
+  })
+  @ApiStandardResponse({
+    type: CategoryResponseDto,
+    status: HttpStatus.ACCEPTED,
+    dataKey: 'category',
+    description: 'Categoria atualizada com sucesso.',
+  })
+  @ApiNotFoundResponse('Categoria não encontrada.')
+  @ApiValidationErrorResponse('Dados inválidos para atualização.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
     const result = await this.categoriesService.update(+id, dto);
     return {
@@ -90,9 +147,25 @@ export class CategoriesController {
 
   @Delete(':id')
   @Roles('admin')
-  @ApiOperation({ summary: 'Delete existing category' })
-  @ApiResponse({ status: 200, description: 'Successful operation.' })
-  @ApiResponse({ status: 404, description: 'Resource Not Found.' })
+  @ApiOperation({
+    summary: 'Remover categoria (Admin)',
+    description:
+      'Exclui permanentemente uma categoria existente. Exige permissão de administrador.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 1,
+    description: 'ID numérico da categoria a ser removida',
+  })
+  @ApiStandardResponse({
+    type: CategoryResponseDto,
+    dataKey: 'category',
+    description: 'Categoria removida com sucesso.',
+  })
+  @ApiNotFoundResponse('Categoria não encontrada.')
+  @ApiAuthUnauthorizedResponse()
+  @ApiForbiddenAccessResponse()
   async destroy(@Param('id') id: string) {
     const category = await this.categoriesService.getById(+id);
     await this.categoriesService.delete(+id);
