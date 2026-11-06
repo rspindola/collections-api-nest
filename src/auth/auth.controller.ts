@@ -40,7 +40,6 @@ export class AuthController {
   @ApiStandardResponse({
     type: AuthUserDto,
     status: HttpStatus.OK,
-    dataKey: 'user',
     description: 'Autenticação realizada com sucesso.',
   })
   @ApiResponse({
@@ -53,6 +52,7 @@ export class AuthController {
     const result = await this.authService.login(dto);
     return {
       success: true,
+      data: result,
       user: result,
       message: 'User signed in',
     };
@@ -68,7 +68,6 @@ export class AuthController {
   @ApiStandardResponse({
     type: AuthUserDto,
     status: HttpStatus.CREATED,
-    dataKey: 'user',
     description: 'Usuário registrado e autenticado com sucesso.',
   })
   @ApiResponse({
@@ -81,6 +80,7 @@ export class AuthController {
     const result = await this.authService.register(dto);
     return {
       success: true,
+      data: result,
       user: result,
       message: 'User created successfully.',
     };

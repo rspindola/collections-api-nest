@@ -51,6 +51,7 @@ describe('AuthController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: serviceResult,
         user: serviceResult,
         message: 'User signed in',
       });
@@ -79,6 +80,7 @@ describe('AuthController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: serviceResult,
         user: serviceResult,
         message: 'User created successfully.',
       });

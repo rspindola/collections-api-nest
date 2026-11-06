@@ -4,7 +4,7 @@ import { BooksRepository } from './repositories/books.repository';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entities/book.entity';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { BookFilterDto } from './dto/book-filter.dto';
 import { PaginatedResult } from '../common/interfaces/paginated-result.interface';
 import * as fs from 'fs/promises';
 import { join } from 'path';
@@ -60,15 +60,22 @@ export class BooksService {
 
   async getAll(
     userId: number,
-    pagination: PaginationDto,
+    filter: BookFilterDto = {},
   ): Promise<PaginatedResult<any>> {
-    const page = pagination.page || 1;
-    const limit = pagination.limit || 15;
+    const page = filter.page || 1;
+    const limit = filter.limit || 15;
     const [data, total] =
       await this.booksRepository.findPaginatedWithUserStatus(
         userId,
         page,
         limit,
+        {
+          search: filter.search,
+          collection_id: filter.collection_id,
+          category_id: filter.category_id,
+          hasRead: filter.hasRead,
+          haveBought: filter.haveBought,
+        },
       );
 
     return {

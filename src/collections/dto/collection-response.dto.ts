@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CategoryResponseDto } from '../../categories/dto/category-response.dto';
+import { BookResponseDto } from '../../books/dto/book-response.dto';
+import { BookStatus, BookGender } from '../../common/enums';
 
 export class CollectionResponseDto {
   @ApiProperty({ example: 1, description: 'ID identificador da coleção' })
@@ -27,12 +29,17 @@ export class CollectionResponseDto {
   licensor: string;
 
   @ApiProperty({
-    example: 'Ongoing',
-    description: 'Status de publicação (ex: Ongoing, Completed, Hiatus)',
+    enum: BookStatus,
+    example: BookStatus.ONGOING,
+    description: 'Status de publicação da coleção',
   })
   status: string;
 
-  @ApiProperty({ example: 'Shonen', description: 'Gênero / demografia' })
+  @ApiProperty({
+    enum: BookGender,
+    example: BookGender.SHONEN,
+    description: 'Gênero / demografia da coleção',
+  })
   gender: string;
 
   @ApiPropertyOptional({
@@ -40,6 +47,13 @@ export class CollectionResponseDto {
     description: 'Dados da categoria vinculada',
   })
   category?: CategoryResponseDto;
+
+  @ApiPropertyOptional({
+    type: () => [BookResponseDto],
+    description:
+      'Lista de volumes e livros pertencentes a esta coleção (carregada em consultas por ID)',
+  })
+  books?: BookResponseDto[];
 
   @ApiProperty({
     example: '2026-01-01T00:00:00.000Z',

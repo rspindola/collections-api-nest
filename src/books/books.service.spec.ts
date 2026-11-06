@@ -75,7 +75,7 @@ describe('BooksService', () => {
       });
       expect(
         mockBooksRepository.findPaginatedWithUserStatus,
-      ).toHaveBeenCalledWith(1, 1, 10);
+      ).toHaveBeenCalledWith(1, 1, 10, expect.any(Object));
     });
 
     it('should fallback to default page and limit', async () => {
@@ -88,7 +88,7 @@ describe('BooksService', () => {
 
       expect(
         mockBooksRepository.findPaginatedWithUserStatus,
-      ).toHaveBeenCalledWith(1, 1, 15);
+      ).toHaveBeenCalledWith(1, 1, 15, expect.any(Object));
     });
   });
 

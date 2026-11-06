@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CollectionResponseDto } from '../../collections/dto/collection-response.dto';
+import { BookGender } from '../../common/enums';
 
 export class UserBookStatusDto {
   @ApiProperty({
@@ -59,7 +60,8 @@ export class BookResponseDto {
   cover?: string;
 
   @ApiPropertyOptional({
-    example: 'Shonen',
+    enum: BookGender,
+    example: BookGender.SHONEN,
     description: 'Gênero / demografia',
   })
   gender?: string;

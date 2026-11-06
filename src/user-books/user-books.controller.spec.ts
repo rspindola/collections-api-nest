@@ -52,6 +52,7 @@ describe('UserBooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: serviceResult,
         userBook: serviceResult,
         message: 'Successfully updated book status',
       });
@@ -69,6 +70,7 @@ describe('UserBooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: serviceResult,
         userBooks: serviceResult,
         message: 'Successfully listed user book statuses',
       });
@@ -91,6 +93,7 @@ describe('UserBooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: serviceResult,
         userBook: serviceResult,
         message: 'Successfully fetched book status',
       });

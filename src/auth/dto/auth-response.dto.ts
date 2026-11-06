@@ -5,6 +5,13 @@ export class AuthUserDto {
   id: number;
 
   @ApiProperty({ example: 'John Doe', description: 'Nome do usuário' })
+  name: string;
+
+  @ApiProperty({
+    example: 'John Doe',
+    description:
+      'Nome de usuário (alias para name, mantido para retrocompatibilidade)',
+  })
   username: string;
 
   @ApiProperty({ example: 'user@email.com', description: 'E-mail cadastrado' })

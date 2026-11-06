@@ -70,7 +70,6 @@ export class CategoriesController {
   @ApiStandardResponse({
     type: CategoryResponseDto,
     status: HttpStatus.CREATED,
-    dataKey: 'category',
     description: 'Categoria criada com sucesso.',
   })
   @ApiValidationErrorResponse('Dados inválidos para criação da categoria.')
@@ -80,6 +79,7 @@ export class CategoriesController {
     const result = await this.categoriesService.store(dto);
     return {
       success: true,
+      data: result,
       category: result,
       message: 'Successfully created category',
     };
@@ -98,7 +98,6 @@ export class CategoriesController {
   })
   @ApiStandardResponse({
     type: CategoryResponseDto,
-    dataKey: 'category',
     description: 'Categoria encontrada com sucesso.',
   })
   @ApiNotFoundResponse('Categoria não encontrada com o ID informado.')
@@ -107,6 +106,7 @@ export class CategoriesController {
     const result = await this.categoriesService.getById(+id);
     return {
       success: true,
+      data: result,
       category: result,
       message: 'Successfully show category',
     };
@@ -114,7 +114,7 @@ export class CategoriesController {
 
   @Put(':id')
   @Roles('admin')
-  @HttpCode(HttpStatus.ACCEPTED)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Atualizar categoria (Admin)',
     description:
@@ -128,8 +128,7 @@ export class CategoriesController {
   })
   @ApiStandardResponse({
     type: CategoryResponseDto,
-    status: HttpStatus.ACCEPTED,
-    dataKey: 'category',
+    status: HttpStatus.OK,
     description: 'Categoria atualizada com sucesso.',
   })
   @ApiNotFoundResponse('Categoria não encontrada.')
@@ -140,6 +139,7 @@ export class CategoriesController {
     const result = await this.categoriesService.update(+id, dto);
     return {
       success: true,
+      data: result,
       category: result,
       message: 'Successfully updated category',
     };
@@ -160,7 +160,6 @@ export class CategoriesController {
   })
   @ApiStandardResponse({
     type: CategoryResponseDto,
-    dataKey: 'category',
     description: 'Categoria removida com sucesso.',
   })
   @ApiNotFoundResponse('Categoria não encontrada.')
@@ -171,6 +170,7 @@ export class CategoriesController {
     await this.categoriesService.delete(+id);
     return {
       success: true,
+      data: category,
       category,
       message: 'Successfully delete category',
     };

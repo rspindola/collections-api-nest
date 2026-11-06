@@ -18,10 +18,13 @@ export class UserResponseDto {
   role: 'admin' | 'user';
 
   @ApiPropertyOptional({
+    type: String,
+    format: 'date-time',
     example: '2026-01-01T00:00:00.000Z',
-    description: 'Data de verificação do e-mail',
+    description:
+      'Data de verificação do e-mail (ou null se ainda não verificado)',
   })
-  emailVerifiedAt?: Date | null;
+  emailVerifiedAt?: Date | string | null;
 
   @ApiProperty({
     example: '2026-01-01T00:00:00.000Z',

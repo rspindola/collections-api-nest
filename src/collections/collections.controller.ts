@@ -70,7 +70,6 @@ export class CollectionsController {
   @ApiStandardResponse({
     type: CollectionResponseDto,
     status: HttpStatus.CREATED,
-    dataKey: 'collection',
     description: 'Coleção criada com sucesso.',
   })
   @ApiValidationErrorResponse('Dados inválidos para criação da coleção.')
@@ -80,6 +79,7 @@ export class CollectionsController {
     const result = await this.collectionsService.store(dto);
     return {
       success: true,
+      data: result,
       collection: result,
       message: 'Successfully created collection',
     };
@@ -89,7 +89,7 @@ export class CollectionsController {
   @ApiOperation({
     summary: 'Buscar coleção por ID',
     description:
-      'Retorna os detalhes de uma coleção específica, incluindo dados da categoria e livros relacionados.',
+      'Retorna os detalhes de uma coleção específica, incluindo dados da categoria e lista de livros relacionados.',
   })
   @ApiParam({
     name: 'id',
@@ -99,7 +99,6 @@ export class CollectionsController {
   })
   @ApiStandardResponse({
     type: CollectionResponseDto,
-    dataKey: 'collection',
     description: 'Coleção encontrada com sucesso.',
   })
   @ApiNotFoundResponse('Coleção não encontrada com o ID informado.')
@@ -108,6 +107,7 @@ export class CollectionsController {
     const result = await this.collectionsService.getById(+id);
     return {
       success: true,
+      data: result,
       collection: result,
       message: 'Successfully show collection',
     };
@@ -128,7 +128,6 @@ export class CollectionsController {
   })
   @ApiStandardResponse({
     type: CollectionResponseDto,
-    dataKey: 'collection',
     description: 'Coleção atualizada com sucesso.',
   })
   @ApiNotFoundResponse('Coleção não encontrada.')
@@ -139,6 +138,7 @@ export class CollectionsController {
     const result = await this.collectionsService.update(+id, dto);
     return {
       success: true,
+      data: result,
       collection: result,
       message: 'Successfully updated collection',
     };
@@ -159,7 +159,6 @@ export class CollectionsController {
   })
   @ApiStandardResponse({
     type: CollectionResponseDto,
-    dataKey: 'collection',
     description: 'Coleção removida com sucesso.',
   })
   @ApiNotFoundResponse('Coleção não encontrada.')
@@ -170,6 +169,7 @@ export class CollectionsController {
     await this.collectionsService.delete(+id);
     return {
       success: true,
+      data: collection,
       collection,
       message: 'Successfully delete collection',
     };

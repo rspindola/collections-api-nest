@@ -18,6 +18,13 @@ export class BooksRepository {
     userId: number,
     page: number,
     limit: number,
+    filters: {
+      search?: string;
+      collection_id?: number;
+      category_id?: number;
+      hasRead?: boolean;
+      haveBought?: boolean;
+    } = {},
   ): Promise<[Book[], number]> {
     const qb = this.repo.createQueryBuilder('book');
 
@@ -26,8 +33,45 @@ export class BooksRepository {
       'userBook',
       'userBook.userId = :userId',
       { userId },
-    )
-      .orderBy('book.id', 'ASC')
+    );
+
+    if (filters.collection_id) {
+      qb.andWhere('book.collectionId = :collectionId', {
+        collectionId: filters.collection_id,
+      });
+    }
+
+    if (filters.search) {
+      qb.andWhere('(book.name LIKE :search OR book.description LIKE :search)', {
+        search: `%${filters.search}%`,
+      });
+    }
+
+    if (filters.category_id) {
+      qb.innerJoin('book.collection', 'col', 'col.categoryId = :categoryId', {
+        categoryId: filters.category_id,
+      });
+    }
+
+    if (filters.hasRead !== undefined) {
+      qb.andWhere(
+        filters.hasRead
+          ? 'userBook.hasRead = :hasRead'
+          : '(userBook.hasRead = false OR userBook.hasRead IS NULL)',
+        { hasRead: filters.hasRead },
+      );
+    }
+
+    if (filters.haveBought !== undefined) {
+      qb.andWhere(
+        filters.haveBought
+          ? 'userBook.haveBought = :haveBought'
+          : '(userBook.haveBought = false OR userBook.haveBought IS NULL)',
+        { haveBought: filters.haveBought },
+      );
+    }
+
+    qb.orderBy('book.id', 'ASC')
       .skip((page - 1) * limit)
       .take(limit);
 

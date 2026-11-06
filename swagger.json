@@ -18,7 +18,7 @@
                     },
                     {
                       "properties": {
-                        "users": {
+                        "data": {
                           "type": "array",
                           "items": {
                             "$ref": "#/components/schemas/UserResponseDto"
@@ -101,7 +101,7 @@
                     },
                     {
                       "properties": {
-                        "user": {
+                        "data": {
                           "$ref": "#/components/schemas/UserResponseDto"
                         }
                       }
@@ -180,7 +180,7 @@
                     },
                     {
                       "properties": {
-                        "user": {
+                        "data": {
                           "$ref": "#/components/schemas/UserResponseDto"
                         }
                       }
@@ -237,7 +237,7 @@
                     },
                     {
                       "properties": {
-                        "user": {
+                        "data": {
                           "$ref": "#/components/schemas/UserResponseDto"
                         }
                       }
@@ -306,7 +306,7 @@
                     },
                     {
                       "properties": {
-                        "user": {
+                        "data": {
                           "$ref": "#/components/schemas/AuthUserDto"
                         }
                       }
@@ -370,7 +370,7 @@
                     },
                     {
                       "properties": {
-                        "user": {
+                        "data": {
                           "$ref": "#/components/schemas/AuthUserDto"
                         }
                       }
@@ -543,7 +543,7 @@
                     },
                     {
                       "properties": {
-                        "category": {
+                        "data": {
                           "$ref": "#/components/schemas/CategoryResponseDto"
                         }
                       }
@@ -623,7 +623,7 @@
                     },
                     {
                       "properties": {
-                        "category": {
+                        "data": {
                           "$ref": "#/components/schemas/CategoryResponseDto"
                         }
                       }
@@ -690,7 +690,7 @@
           }
         },
         "responses": {
-          "202": {
+          "200": {
             "description": "Categoria atualizada com sucesso.",
             "content": {
               "application/json": {
@@ -701,7 +701,7 @@
                     },
                     {
                       "properties": {
-                        "category": {
+                        "data": {
                           "$ref": "#/components/schemas/CategoryResponseDto"
                         }
                       }
@@ -789,7 +789,7 @@
                     },
                     {
                       "properties": {
-                        "category": {
+                        "data": {
                           "$ref": "#/components/schemas/CategoryResponseDto"
                         }
                       }
@@ -939,7 +939,7 @@
                     },
                     {
                       "properties": {
-                        "collection": {
+                        "data": {
                           "$ref": "#/components/schemas/CollectionResponseDto"
                         }
                       }
@@ -993,7 +993,7 @@
     },
     "/api/collections/{id}": {
       "get": {
-        "description": "Retorna os detalhes de uma coleção específica, incluindo dados da categoria e livros relacionados.",
+        "description": "Retorna os detalhes de uma coleção específica, incluindo dados da categoria e lista de livros relacionados.",
         "operationId": "CollectionsController_show",
         "parameters": [
           {
@@ -1019,7 +1019,7 @@
                     },
                     {
                       "properties": {
-                        "collection": {
+                        "data": {
                           "$ref": "#/components/schemas/CollectionResponseDto"
                         }
                       }
@@ -1097,7 +1097,7 @@
                     },
                     {
                       "properties": {
-                        "collection": {
+                        "data": {
                           "$ref": "#/components/schemas/CollectionResponseDto"
                         }
                       }
@@ -1185,7 +1185,7 @@
                     },
                     {
                       "properties": {
-                        "collection": {
+                        "data": {
                           "$ref": "#/components/schemas/CollectionResponseDto"
                         }
                       }
@@ -1239,7 +1239,7 @@
     },
     "/api/books": {
       "get": {
-        "description": "Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado.",
+        "description": "Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado. Suporta busca por texto (search), filtro por coleção (collection_id), categoria (category_id) e status de leitura/posse.",
         "operationId": "BooksController_index",
         "parameters": [
           {
@@ -1260,6 +1260,56 @@
               "default": 15,
               "example": 15,
               "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Termo de busca por nome ou descrição do livro",
+            "schema": {
+              "example": "Naruto",
+              "type": "string"
+            }
+          },
+          {
+            "name": "collection_id",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar livros pertencentes a uma coleção específica",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "category_id",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar livros por categoria temática (via coleção)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "hasRead",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar livros marcados como lidos pelo usuário autenticado",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "haveBought",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar livros marcados como comprados pelo usuário autenticado",
+            "schema": {
+              "example": true,
+              "type": "boolean"
             }
           }
         ],
@@ -1304,7 +1354,7 @@
             "bearer": []
           }
         ],
-        "summary": "Listar livros com paginação",
+        "summary": "Listar livros com paginação e filtros",
         "tags": [
           "Books"
         ]
@@ -1336,7 +1386,7 @@
                     },
                     {
                       "properties": {
-                        "book": {
+                        "data": {
                           "$ref": "#/components/schemas/BookResponseDto"
                         }
                       }
@@ -1416,7 +1466,7 @@
                     },
                     {
                       "properties": {
-                        "book": {
+                        "data": {
                           "$ref": "#/components/schemas/BookResponseDto"
                         }
                       }
@@ -1495,7 +1545,7 @@
                     },
                     {
                       "properties": {
-                        "book": {
+                        "data": {
                           "$ref": "#/components/schemas/BookResponseDto"
                         }
                       }
@@ -1583,7 +1633,7 @@
                     },
                     {
                       "properties": {
-                        "book": {
+                        "data": {
                           "$ref": "#/components/schemas/BookResponseDto"
                         }
                       }
@@ -1662,7 +1712,7 @@
                     },
                     {
                       "properties": {
-                        "userBook": {
+                        "data": {
                           "$ref": "#/components/schemas/UserBookResponseDto"
                         }
                       }
@@ -1719,7 +1769,7 @@
                     },
                     {
                       "properties": {
-                        "userBooks": {
+                        "data": {
                           "type": "array",
                           "items": {
                             "$ref": "#/components/schemas/UserBookResponseDto"
@@ -1782,7 +1832,7 @@
                     },
                     {
                       "properties": {
-                        "userBook": {
+                        "data": {
                           "$ref": "#/components/schemas/UserBookResponseDto"
                         }
                       }
@@ -1939,9 +1989,10 @@
             "description": "Nível de privilégio no sistema"
           },
           "emailVerifiedAt": {
-            "type": "object",
+            "type": "string",
+            "format": "date-time",
             "example": "2026-01-01T00:00:00.000Z",
-            "description": "Data de verificação do e-mail"
+            "description": "Data de verificação do e-mail (ou null se ainda não verificado)"
           },
           "createdAt": {
             "format": "date-time",
@@ -2041,10 +2092,15 @@
             "example": 1,
             "description": "ID identificador do usuário"
           },
-          "username": {
+          "name": {
             "type": "string",
             "example": "John Doe",
             "description": "Nome do usuário"
+          },
+          "username": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Nome de usuário (alias para name, mantido para retrocompatibilidade)"
           },
           "email": {
             "type": "string",
@@ -2068,6 +2124,7 @@
         },
         "required": [
           "id",
+          "name",
           "username",
           "email",
           "role",
@@ -2238,6 +2295,25 @@
           }
         }
       },
+      "UserBookStatusDto": {
+        "type": "object",
+        "properties": {
+          "hasRead": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário logado já leu este livro"
+          },
+          "haveBought": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indica se o usuário logado possui/comprou este livro"
+          }
+        },
+        "required": [
+          "hasRead",
+          "haveBought"
+        ]
+      },
       "CollectionResponseDto": {
         "type": "object",
         "properties": {
@@ -2268,13 +2344,30 @@
           },
           "status": {
             "type": "string",
+            "enum": [
+              "Ongoing",
+              "Completed",
+              "Hiatus",
+              "Cancelled"
+            ],
             "example": "Ongoing",
-            "description": "Status de publicação (ex: Ongoing, Completed, Hiatus)"
+            "description": "Status de publicação da coleção"
           },
           "gender": {
             "type": "string",
+            "enum": [
+              "Shonen",
+              "Shojo",
+              "Seinen",
+              "Josei",
+              "Comics",
+              "Graphic Novel",
+              "Manga",
+              "Book",
+              "Other"
+            ],
             "example": "Shonen",
-            "description": "Gênero / demografia"
+            "description": "Gênero / demografia da coleção"
           },
           "category": {
             "description": "Dados da categoria vinculada",
@@ -2283,6 +2376,13 @@
                 "$ref": "#/components/schemas/CategoryResponseDto"
               }
             ]
+          },
+          "books": {
+            "description": "Lista de volumes e livros pertencentes a esta coleção (carregada em consultas por ID)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookResponseDto"
+            }
           },
           "createdAt": {
             "format": "date-time",
@@ -2305,6 +2405,114 @@
           "licensor",
           "status",
           "gender",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "BookResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador do livro"
+          },
+          "collectionId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID da coleção à qual o livro pertence"
+          },
+          "name": {
+            "type": "string",
+            "example": "Naruto Vol. 1",
+            "description": "Nome ou título do volume"
+          },
+          "description": {
+            "type": "string",
+            "example": "The start of the ninja journey.",
+            "description": "Sinopse ou descrição do livro"
+          },
+          "publishedAt": {
+            "type": "string",
+            "example": "2003-03-03",
+            "description": "Data de publicação"
+          },
+          "company": {
+            "type": "string",
+            "example": "Shueisha",
+            "description": "Editora original"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini",
+            "description": "Licenciadora nacional"
+          },
+          "cover": {
+            "type": "string",
+            "example": "http://localhost:3000/storage/covers/naruto-1.jpg",
+            "description": "URL completa ou caminho relativo da imagem da capa"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "Shonen",
+              "Shojo",
+              "Seinen",
+              "Josei",
+              "Comics",
+              "Graphic Novel",
+              "Manga",
+              "Book",
+              "Other"
+            ],
+            "example": "Shonen",
+            "description": "Gênero / demografia"
+          },
+          "pages": {
+            "type": "number",
+            "example": 192,
+            "description": "Número de páginas"
+          },
+          "price": {
+            "type": "number",
+            "example": 29.9,
+            "description": "Preço de capa"
+          },
+          "userStatus": {
+            "description": "Status do livro para o usuário autenticado na requisição",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserBookStatusDto"
+              }
+            ]
+          },
+          "collection": {
+            "description": "Dados da coleção vinculada (se carregada)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectionResponseDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "name",
+          "description",
+          "userStatus",
           "createdAt",
           "updatedAt"
         ]
@@ -2374,122 +2582,6 @@
             "example": 1
           }
         }
-      },
-      "UserBookStatusDto": {
-        "type": "object",
-        "properties": {
-          "hasRead": {
-            "type": "boolean",
-            "example": true,
-            "description": "Indica se o usuário logado já leu este livro"
-          },
-          "haveBought": {
-            "type": "boolean",
-            "example": false,
-            "description": "Indica se o usuário logado possui/comprou este livro"
-          }
-        },
-        "required": [
-          "hasRead",
-          "haveBought"
-        ]
-      },
-      "BookResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID identificador do livro"
-          },
-          "collectionId": {
-            "type": "number",
-            "example": 1,
-            "description": "ID da coleção à qual o livro pertence"
-          },
-          "name": {
-            "type": "string",
-            "example": "Naruto Vol. 1",
-            "description": "Nome ou título do volume"
-          },
-          "description": {
-            "type": "string",
-            "example": "The start of the ninja journey.",
-            "description": "Sinopse ou descrição do livro"
-          },
-          "publishedAt": {
-            "type": "string",
-            "example": "2003-03-03",
-            "description": "Data de publicação"
-          },
-          "company": {
-            "type": "string",
-            "example": "Shueisha",
-            "description": "Editora original"
-          },
-          "licensor": {
-            "type": "string",
-            "example": "Panini",
-            "description": "Licenciadora nacional"
-          },
-          "cover": {
-            "type": "string",
-            "example": "http://localhost:3000/storage/covers/naruto-1.jpg",
-            "description": "URL completa ou caminho relativo da imagem da capa"
-          },
-          "gender": {
-            "type": "string",
-            "example": "Shonen",
-            "description": "Gênero / demografia"
-          },
-          "pages": {
-            "type": "number",
-            "example": 192,
-            "description": "Número de páginas"
-          },
-          "price": {
-            "type": "number",
-            "example": 29.9,
-            "description": "Preço de capa"
-          },
-          "userStatus": {
-            "description": "Status do livro para o usuário autenticado na requisição",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/UserBookStatusDto"
-              }
-            ]
-          },
-          "collection": {
-            "description": "Dados da coleção vinculada (se carregada)",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CollectionResponseDto"
-              }
-            ]
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-01-01T00:00:00.000Z",
-            "description": "Data de criação"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-01-01T00:00:00.000Z",
-            "description": "Data da última atualização"
-          }
-        },
-        "required": [
-          "id",
-          "collectionId",
-          "name",
-          "description",
-          "userStatus",
-          "createdAt",
-          "updatedAt"
-        ]
       },
       "CreateBookUploadDto": {
         "type": "object",

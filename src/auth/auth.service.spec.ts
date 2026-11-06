@@ -90,6 +90,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         access_token: 'jwt_token',
         id: 1,
+        name: 'John Doe',
         username: 'John Doe',
         email: 'john@example.com',
         role: 'user',
@@ -155,6 +156,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         access_token: 'jwt_token',
         id: 1,
+        name: 'John Doe',
         username: 'John Doe',
         email: 'john@example.com',
         role: 'user',

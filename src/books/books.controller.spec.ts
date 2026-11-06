@@ -71,6 +71,7 @@ describe('BooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: bookResult,
         book: bookResult,
         message: 'Successfully created book',
       });
@@ -101,6 +102,7 @@ describe('BooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: book,
         book,
         message: 'Successfully created show',
       });
@@ -119,6 +121,7 @@ describe('BooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: updatedBook,
         book: updatedBook,
         message: 'Successfully updated book',
       });
@@ -149,6 +152,7 @@ describe('BooksController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: deletedBook,
         book: deletedBook,
         message: 'Successfully delete book',
       });

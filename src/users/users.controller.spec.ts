@@ -43,6 +43,7 @@ describe('UsersController', () => {
       const result = await controller.index();
       expect(result).toEqual({
         success: true,
+        data: usersList,
         users: usersList,
         message: 'Successfully listed users',
       });
@@ -62,14 +63,16 @@ describe('UsersController', () => {
       mockUsersService.updateRole.mockResolvedValue(updatedUser);
 
       const result = await controller.updateRole('2', dto);
+      const userData = {
+        id: 2,
+        name: 'User 2',
+        email: 'u2@example.com',
+        role: 'admin',
+      };
       expect(result).toEqual({
         success: true,
-        user: {
-          id: 2,
-          name: 'User 2',
-          email: 'u2@example.com',
-          role: 'admin',
-        },
+        data: userData,
+        user: userData,
         message: 'User role updated successfully',
       });
       expect(mockUsersService.updateRole).toHaveBeenCalledWith(2, 'admin');
@@ -89,6 +92,7 @@ describe('UsersController', () => {
       const result = await controller.profile(req);
       expect(result).toEqual({
         success: true,
+        data: expect.objectContaining({ id: 1, name: 'User 1' }),
         user: expect.objectContaining({ id: 1, name: 'User 1' }),
         message: 'Successfully fetched profile',
       });
@@ -107,6 +111,7 @@ describe('UsersController', () => {
       const result = await controller.updateProfile(req, dto);
       expect(result).toEqual({
         success: true,
+        data: updatedUser,
         user: updatedUser,
         message: 'Profile updated successfully',
       });

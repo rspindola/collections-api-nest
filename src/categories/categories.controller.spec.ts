@@ -66,6 +66,7 @@ describe('CategoriesController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: createdCategory,
         category: createdCategory,
         message: 'Successfully created category',
       });
@@ -82,6 +83,7 @@ describe('CategoriesController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: category,
         category,
         message: 'Successfully show category',
       });
@@ -103,6 +105,7 @@ describe('CategoriesController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: updatedCategory,
         category: updatedCategory,
         message: 'Successfully updated category',
       });
@@ -120,6 +123,7 @@ describe('CategoriesController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: category,
         category,
         message: 'Successfully delete category',
       });

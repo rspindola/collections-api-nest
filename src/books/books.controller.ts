@@ -26,7 +26,7 @@ import { BookResponseDto } from './dto/book-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { BookFilterDto } from './dto/book-filter.dto';
 import { multerOptions } from './config/multer.config';
 import {
   ApiTags,
@@ -54,16 +54,16 @@ export class BooksController {
 
   @Get()
   @ApiOperation({
-    summary: 'Listar livros com paginação',
+    summary: 'Listar livros com paginação e filtros',
     description:
-      'Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado.',
+      'Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado. Suporta busca por texto (search), filtro por coleção (collection_id), categoria (category_id) e status de leitura/posse.',
   })
   @ApiPaginatedResponse(BookResponseDto, {
     description: 'Lista paginada de livros retornada com sucesso.',
   })
   @ApiAuthUnauthorizedResponse()
-  async index(@Request() req: any, @Query() pagination: PaginationDto) {
-    const result = await this.booksService.getAll(req.user.id, pagination);
+  async index(@Request() req: any, @Query() filter: BookFilterDto) {
+    const result = await this.booksService.getAll(req.user.id, filter);
     return {
       success: true,
       ...result,
@@ -87,7 +87,6 @@ export class BooksController {
   @ApiStandardResponse({
     type: BookResponseDto,
     status: HttpStatus.CREATED,
-    dataKey: 'book',
     description: 'Livro criado com sucesso.',
   })
   @ApiValidationErrorResponse('Dados inválidos para cadastro do livro.')
@@ -101,6 +100,7 @@ export class BooksController {
     const result = await this.booksService.store(dto, file?.filename);
     return {
       success: true,
+      data: result,
       book: result,
       message: 'Successfully created book',
     };
@@ -120,7 +120,6 @@ export class BooksController {
   })
   @ApiStandardResponse({
     type: BookResponseDto,
-    dataKey: 'book',
     description: 'Detalhes do livro retornados com sucesso.',
   })
   @ApiNotFoundResponse('Livro não encontrado com o ID informado.')
@@ -129,6 +128,7 @@ export class BooksController {
     const result = await this.booksService.getById(+id, req.user.id);
     return {
       success: true,
+      data: result,
       book: result,
       message: 'Successfully created show',
     };
@@ -155,7 +155,6 @@ export class BooksController {
   })
   @ApiStandardResponse({
     type: BookResponseDto,
-    dataKey: 'book',
     description: 'Livro atualizado com sucesso.',
   })
   @ApiNotFoundResponse('Livro não encontrado.')
@@ -171,6 +170,7 @@ export class BooksController {
     const result = await this.booksService.update(+id, dto, file?.filename);
     return {
       success: true,
+      data: result,
       book: result,
       message: 'Successfully updated book',
     };
@@ -191,7 +191,6 @@ export class BooksController {
   })
   @ApiStandardResponse({
     type: BookResponseDto,
-    dataKey: 'book',
     description: 'Livro removido com sucesso.',
   })
   @ApiNotFoundResponse('Livro não encontrado.')
@@ -201,6 +200,7 @@ export class BooksController {
     const result = await this.booksService.delete(+id);
     return {
       success: true,
+      data: result,
       book: result,
       message: 'Successfully delete book',
     };

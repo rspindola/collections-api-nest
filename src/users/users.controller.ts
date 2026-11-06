@@ -44,7 +44,6 @@ export class UsersController {
   })
   @ApiStandardResponse({
     type: UserResponseDto,
-    dataKey: 'users',
     isArray: true,
     description: 'Lista de usuários retornada com sucesso.',
   })
@@ -54,6 +53,7 @@ export class UsersController {
     const result = await this.usersService.findAll();
     return {
       success: true,
+      data: result,
       users: result,
       message: 'Successfully listed users',
     };
@@ -74,7 +74,6 @@ export class UsersController {
   })
   @ApiStandardResponse({
     type: UserResponseDto,
-    dataKey: 'user',
     description: 'Permissão do usuário alterada com sucesso.',
   })
   @ApiNotFoundResponse('Usuário não encontrado.')
@@ -83,14 +82,16 @@ export class UsersController {
   @ApiForbiddenAccessResponse()
   async updateRole(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
     const result = await this.usersService.updateRole(+id, dto.role);
+    const userData = {
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      role: result.role,
+    };
     return {
       success: true,
-      user: {
-        id: result.id,
-        name: result.name,
-        email: result.email,
-        role: result.role,
-      },
+      data: userData,
+      user: userData,
       message: 'User role updated successfully',
     };
   }
@@ -103,7 +104,6 @@ export class UsersController {
   })
   @ApiStandardResponse({
     type: UserResponseDto,
-    dataKey: 'user',
     description: 'Perfil do usuário retornado com sucesso.',
   })
   @ApiAuthUnauthorizedResponse()
@@ -113,6 +113,7 @@ export class UsersController {
     delete (user as any).password;
     return {
       success: true,
+      data: user,
       user,
       message: 'Successfully fetched profile',
     };
@@ -126,7 +127,6 @@ export class UsersController {
   })
   @ApiStandardResponse({
     type: UserResponseDto,
-    dataKey: 'user',
     description: 'Perfil atualizado com sucesso.',
   })
   @ApiValidationErrorResponse('Dados inválidos ou senha atual incorreta.')
@@ -135,6 +135,7 @@ export class UsersController {
     const result = await this.usersService.updateProfile(req.user.id, dto);
     return {
       success: true,
+      data: result,
       user: result,
       message: 'Profile updated successfully',
     };

@@ -39,7 +39,6 @@ export class UserBooksController {
   })
   @ApiStandardResponse({
     type: UserBookResponseDto,
-    dataKey: 'userBook',
     description: 'Status do livro salvo com sucesso.',
   })
   @ApiValidationErrorResponse('Dados inválidos para o registro de status.')
@@ -48,6 +47,7 @@ export class UserBooksController {
     const result = await this.userBooksService.upsert(req.user.id, dto);
     return {
       success: true,
+      data: result,
       userBook: result,
       message: 'Successfully updated book status',
     };
@@ -61,7 +61,6 @@ export class UserBooksController {
   })
   @ApiStandardResponse({
     type: UserBookResponseDto,
-    dataKey: 'userBooks',
     isArray: true,
     description: 'Lista de status de livros retornada com sucesso.',
   })
@@ -70,6 +69,7 @@ export class UserBooksController {
     const result = await this.userBooksService.findByUser(req.user.id);
     return {
       success: true,
+      data: result,
       userBooks: result,
       message: 'Successfully listed user book statuses',
     };
@@ -89,7 +89,6 @@ export class UserBooksController {
   })
   @ApiStandardResponse({
     type: UserBookResponseDto,
-    dataKey: 'userBook',
     description: 'Status do livro retornado com sucesso.',
   })
   @ApiNotFoundResponse('Status não encontrado para o livro especificado.')
@@ -98,6 +97,7 @@ export class UserBooksController {
     const result = await this.userBooksService.findOne(req.user.id, +bookId);
     return {
       success: true,
+      data: result,
       userBook: result,
       message: 'Successfully fetched book status',
     };

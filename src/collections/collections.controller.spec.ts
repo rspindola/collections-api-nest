@@ -73,6 +73,7 @@ describe('CollectionsController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: createdCollection,
         collection: createdCollection,
         message: 'Successfully created collection',
       });
@@ -89,6 +90,7 @@ describe('CollectionsController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: collection,
         collection,
         message: 'Successfully show collection',
       });
@@ -106,6 +108,7 @@ describe('CollectionsController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: updatedCollection,
         collection: updatedCollection,
         message: 'Successfully updated collection',
       });
@@ -123,6 +126,7 @@ describe('CollectionsController', () => {
 
       expect(result).toEqual({
         success: true,
+        data: collection,
         collection,
         message: 'Successfully delete collection',
       });
