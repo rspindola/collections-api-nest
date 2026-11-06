@@ -1,0 +1,2673 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/users": {
+      "get": {
+        "description": "Retorna a lista de todos os usuários registrados no sistema. Exige permissão de administrador.",
+        "operationId": "UsersController_index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "users": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar todos os usuários (Admin)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/role": {
+      "put": {
+        "description": "Atualiza o papel (role) de um usuário específico para `user` ou `admin`. Exige permissão de administrador.",
+        "operationId": "UsersController_updateRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico do usuário",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permissão do usuário alterada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/UserResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Valor de role inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Alterar permissão de um usuário (Admin)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "description": "Retorna os dados cadastrais da conta do usuário atualmente autenticado.",
+        "operationId": "UsersController_profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Perfil do usuário retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/UserResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Consultar perfil do usuário autenticado",
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "description": "Permite ao usuário conectado atualizar seu nome, e-mail e alterar sua senha fornecendo a senha atual.",
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perfil atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/UserResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos ou senha atual incorreta.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar perfil do usuário autenticado",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "description": "Valida as credenciais (e-mail e senha) e retorna os dados do usuário com o token JWT de acesso.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticação realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/AuthUserDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas (e-mail ou senha incorretos).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados de login em formato inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Autenticação de usuário (Login)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "description": "Cria uma nova conta de usuário comum no sistema e já retorna a sessão autenticada com token JWT.",
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário registrado e autenticado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/AuthUserDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "E-mail já registrado ou confirmação de senha divergente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Falha nas regras de validação dos campos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Cadastro de novo usuário (Registro)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "get": {
+        "description": "Emite resposta de encerramento da sessão atual autenticada pelo token JWT.",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Sessão encerrada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandardResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Encerramento de sessão (Logout)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "description": "Retorna a lista paginada de todas as categorias cadastradas.",
+        "operationId": "CategoriesController_index",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de categorias retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CategoryResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar categorias",
+        "tags": [
+          "Categories"
+        ]
+      },
+      "post": {
+        "description": "Cadastra uma nova categoria no sistema. Exige permissão de administrador.",
+        "operationId": "CategoriesController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Categoria criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/CategoryResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para criação da categoria.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Criar nova categoria (Admin)",
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/categories/{id}": {
+      "get": {
+        "description": "Retorna os detalhes de uma categoria específica.",
+        "operationId": "CategoriesController_show",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da categoria",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria encontrada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/CategoryResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada com o ID informado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar categoria por ID",
+        "tags": [
+          "Categories"
+        ]
+      },
+      "put": {
+        "description": "Atualiza o nome e slug de uma categoria existente. Exige permissão de administrador.",
+        "operationId": "CategoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da categoria a ser atualizada",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Categoria atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/CategoryResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para atualização.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar categoria (Admin)",
+        "tags": [
+          "Categories"
+        ]
+      },
+      "delete": {
+        "description": "Exclui permanentemente uma categoria existente. Exige permissão de administrador.",
+        "operationId": "CategoriesController_destroy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da categoria a ser removida",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categoria removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "category": {
+                          "$ref": "#/components/schemas/CategoryResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Categoria não encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remover categoria (Admin)",
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/collections": {
+      "get": {
+        "description": "Retorna uma lista paginada de todas as coleções cadastradas.",
+        "operationId": "CollectionsController_index",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de coleções retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CollectionResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar coleções",
+        "tags": [
+          "Collections"
+        ]
+      },
+      "post": {
+        "description": "Cadastra uma nova coleção vinculada a uma categoria existente. Exige permissão de administrador.",
+        "operationId": "CollectionsController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCollectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Coleção criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "collection": {
+                          "$ref": "#/components/schemas/CollectionResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para criação da coleção.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Criar nova coleção (Admin)",
+        "tags": [
+          "Collections"
+        ]
+      }
+    },
+    "/api/collections/{id}": {
+      "get": {
+        "description": "Retorna os detalhes de uma coleção específica, incluindo dados da categoria e livros relacionados.",
+        "operationId": "CollectionsController_show",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da coleção",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coleção encontrada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "collection": {
+                          "$ref": "#/components/schemas/CollectionResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Coleção não encontrada com o ID informado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar coleção por ID",
+        "tags": [
+          "Collections"
+        ]
+      },
+      "put": {
+        "description": "Atualiza os dados de uma coleção existente. Exige permissão de administrador.",
+        "operationId": "CollectionsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da coleção",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCollectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Coleção atualizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "collection": {
+                          "$ref": "#/components/schemas/CollectionResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Coleção não encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para atualização.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar coleção (Admin)",
+        "tags": [
+          "Collections"
+        ]
+      },
+      "delete": {
+        "description": "Exclui permanentemente uma coleção. Exige permissão de administrador.",
+        "operationId": "CollectionsController_destroy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico da coleção",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coleção removida com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "collection": {
+                          "$ref": "#/components/schemas/CollectionResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Coleção não encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remover coleção (Admin)",
+        "tags": [
+          "Collections"
+        ]
+      }
+    },
+    "/api/books": {
+      "get": {
+        "description": "Retorna a lista paginada de livros cadastrados com o status de leitura/posse do usuário autenticado.",
+        "operationId": "BooksController_index",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de livros retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/BookResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar livros com paginação",
+        "tags": [
+          "Books"
+        ]
+      },
+      "post": {
+        "description": "Cria um novo livro associado a uma coleção e permite upload opcional de capa. Exige perfil de administrador.",
+        "operationId": "BooksController_store",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Campos do livro e arquivo de imagem para capa.",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Livro criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "book": {
+                          "$ref": "#/components/schemas/BookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para cadastro do livro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cadastrar novo livro com capa (Admin)",
+        "tags": [
+          "Books"
+        ]
+      }
+    },
+    "/api/books/{id}": {
+      "get": {
+        "description": "Retorna os dados completos do livro e o status de leitura/posse do usuário autenticado.",
+        "operationId": "BooksController_show",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico do livro",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do livro retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "book": {
+                          "$ref": "#/components/schemas/BookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Livro não encontrado com o ID informado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar detalhes de um livro por ID",
+        "tags": [
+          "Books"
+        ]
+      },
+      "put": {
+        "description": "Atualiza os dados de um livro e opcionalmente substitui a imagem da capa. Exige perfil de administrador.",
+        "operationId": "BooksController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico do livro",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Campos para atualização do livro e novo arquivo de capa opcional.",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Livro atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "book": {
+                          "$ref": "#/components/schemas/BookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Livro não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para atualização.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atualizar livro existente (Admin)",
+        "tags": [
+          "Books"
+        ]
+      },
+      "delete": {
+        "description": "Exclui permanentemente um livro e remove o arquivo físico da capa. Exige perfil de administrador.",
+        "operationId": "BooksController_destroy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico do livro",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Livro removido com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "book": {
+                          "$ref": "#/components/schemas/BookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso proibido. Nível de permissão insuficiente (ex: requer admin).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Livro não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remover livro do catálogo (Admin)",
+        "tags": [
+          "Books"
+        ]
+      }
+    },
+    "/api/user-books": {
+      "put": {
+        "description": "Salva ou altera o status de leitura (`hasRead`) e posse (`haveBought`) de um determinado livro para o usuário logado.",
+        "operationId": "UserBooksController_upsert",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertUserBookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status do livro salvo com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "userBook": {
+                          "$ref": "#/components/schemas/UserBookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Dados inválidos para o registro de status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar ou atualizar status do livro (Lido / Comprado)",
+        "tags": [
+          "User Books"
+        ]
+      },
+      "get": {
+        "description": "Retorna a lista de todos os livros marcados como lidos ou comprados pelo usuário autenticado.",
+        "operationId": "UserBooksController_index",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de status de livros retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "userBooks": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserBookResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar estante pessoal do usuário logado",
+        "tags": [
+          "User Books"
+        ]
+      }
+    },
+    "/api/user-books/{bookId}": {
+      "get": {
+        "description": "Retorna se o usuário autenticado já leu ou comprou o livro com o ID informado.",
+        "operationId": "UserBooksController_show",
+        "parameters": [
+          {
+            "name": "bookId",
+            "required": true,
+            "in": "path",
+            "description": "ID numérico do livro",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status do livro retornado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/StandardResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "userBook": {
+                          "$ref": "#/components/schemas/UserBookResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado. Token JWT ausente ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status não encontrado para o livro especificado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar status do usuário para um livro específico",
+        "tags": [
+          "User Books"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Collections API",
+    "description": "API RESTful para gerenciamento de coleções e catálogo de livros (quadrinhos, mangás e livros).\n\n### Autenticação\nA maioria dos endpoints requer autenticação via **Bearer Token (JWT)**. Para autenticar:\n1. Obtenha o token através do endpoint `POST /api/auth/login` ou `POST /api/auth/register`.\n2. Clique no botão **Authorize** no topo desta página e insira seu token.\n\n### Formato de Resposta Padronizado\n- **Sucesso:** `{ success: true, data: ..., message: \"...\" }`\n- **Listagens Paginadas:** `{ success: true, data: [...], meta: { total, page, limit, lastPage }, message: \"...\" }`\n- **Erros:** `{ success: false, message: \"...\", data: ... }`",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Autenticação de usuários, login, registro e encerramento de sessão."
+    },
+    {
+      "name": "Categories",
+      "description": "Categorias temáticas para agrupar coleções (ex: Mangá, HQ, Livro)."
+    },
+    {
+      "name": "Collections",
+      "description": "Séries e coleções de livros (ex: Dragon Ball, Harry Potter)."
+    },
+    {
+      "name": "Books",
+      "description": "Catálogo de livros, volumes individuais e upload de capas."
+    },
+    {
+      "name": "User Books",
+      "description": "Gerenciamento dos livros pertencentes ao usuário logado."
+    },
+    {
+      "name": "Users",
+      "description": "Consulta e gerenciamento de usuários do sistema."
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Insira o token JWT gerado no login."
+      }
+    },
+    "schemas": {
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indica que a requisição falhou"
+          },
+          "message": {
+            "type": "string",
+            "example": "Resource not found",
+            "description": "Mensagem de erro"
+          },
+          "data": {
+            "type": "object",
+            "example": {},
+            "description": "Detalhes adicionais do erro"
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      },
+      "StandardResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se a requisição foi bem-sucedida"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation completed successfully",
+            "description": "Mensagem informativa da operação"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador do usuário"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Nome do usuário"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@email.com",
+            "description": "E-mail cadastrado"
+          },
+          "role": {
+            "type": "string",
+            "example": "user",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "description": "Nível de privilégio no sistema"
+          },
+          "emailVerifiedAt": {
+            "type": "object",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de verificação do e-mail"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação da conta"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última alteração"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ValidationErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indica que a requisição falhou"
+          },
+          "message": {
+            "type": "string",
+            "example": "Error validation",
+            "description": "Mensagem de validação"
+          },
+          "data": {
+            "example": [
+              "name should not be empty",
+              "collection_id must be a number"
+            ],
+            "description": "Lista de mensagens de validação apontadas pelo class-validator",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      },
+      "UpdateRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "user"
+            ],
+            "example": "admin"
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "newpassword123"
+          },
+          "currentPassword": {
+            "type": "string",
+            "example": "oldpassword123"
+          }
+        }
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador do usuário"
+          },
+          "username": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Nome do usuário"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@email.com",
+            "description": "E-mail cadastrado"
+          },
+          "role": {
+            "type": "string",
+            "example": "user",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "description": "Nível de acesso do usuário"
+          },
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "Token JWT para ser enviado no header Authorization: Bearer <token>"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "email",
+          "role",
+          "access_token"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "minLength": 6
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "confirmPassword"
+        ]
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Total de registros disponíveis"
+          },
+          "page": {
+            "type": "number",
+            "example": 1,
+            "description": "Página atual"
+          },
+          "limit": {
+            "type": "number",
+            "example": 15,
+            "description": "Quantidade de registros por página"
+          },
+          "lastPage": {
+            "type": "number",
+            "example": 3,
+            "description": "Total de páginas"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "limit",
+          "lastPage"
+        ]
+      },
+      "PaginatedResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se a requisição foi bem-sucedida"
+          },
+          "meta": {
+            "description": "Metadados da paginação",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMetaDto"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "example": "Successfully listed records",
+            "description": "Mensagem informativa"
+          }
+        },
+        "required": [
+          "success",
+          "meta",
+          "message"
+        ]
+      },
+      "CategoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador da categoria"
+          },
+          "name": {
+            "type": "string",
+            "example": "Mangás",
+            "description": "Nome da categoria"
+          },
+          "slug": {
+            "type": "string",
+            "example": "mangas",
+            "description": "Slug gerado a partir do nome"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Mangas"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Mangas"
+          }
+        }
+      },
+      "CollectionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador da coleção"
+          },
+          "categoryId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID da categoria à qual a coleção pertence"
+          },
+          "name": {
+            "type": "string",
+            "example": "Dragon Ball Deluxe",
+            "description": "Nome da coleção"
+          },
+          "description": {
+            "type": "string",
+            "example": "Coleção completa da saga Dragon Ball",
+            "description": "Descrição da coleção"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini",
+            "description": "Editora / licenciadora"
+          },
+          "status": {
+            "type": "string",
+            "example": "Ongoing",
+            "description": "Status de publicação (ex: Ongoing, Completed, Hiatus)"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen",
+            "description": "Gênero / demografia"
+          },
+          "category": {
+            "description": "Dados da categoria vinculada",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryResponseDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "name",
+          "description",
+          "licensor",
+          "status",
+          "gender",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCollectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Manga Collection"
+          },
+          "description": {
+            "type": "string",
+            "example": "All my manga volumes"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini"
+          },
+          "status": {
+            "type": "string",
+            "example": "Ongoing"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen"
+          },
+          "category_id": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "licensor",
+          "status",
+          "gender",
+          "category_id"
+        ]
+      },
+      "UpdateCollectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Manga Collection"
+          },
+          "description": {
+            "type": "string",
+            "example": "All my manga volumes"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini"
+          },
+          "status": {
+            "type": "string",
+            "example": "Ongoing"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen"
+          },
+          "category_id": {
+            "type": "number",
+            "example": 1
+          }
+        }
+      },
+      "UserBookStatusDto": {
+        "type": "object",
+        "properties": {
+          "hasRead": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário logado já leu este livro"
+          },
+          "haveBought": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indica se o usuário logado possui/comprou este livro"
+          }
+        },
+        "required": [
+          "hasRead",
+          "haveBought"
+        ]
+      },
+      "BookResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador do livro"
+          },
+          "collectionId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID da coleção à qual o livro pertence"
+          },
+          "name": {
+            "type": "string",
+            "example": "Naruto Vol. 1",
+            "description": "Nome ou título do volume"
+          },
+          "description": {
+            "type": "string",
+            "example": "The start of the ninja journey.",
+            "description": "Sinopse ou descrição do livro"
+          },
+          "publishedAt": {
+            "type": "string",
+            "example": "2003-03-03",
+            "description": "Data de publicação"
+          },
+          "company": {
+            "type": "string",
+            "example": "Shueisha",
+            "description": "Editora original"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini",
+            "description": "Licenciadora nacional"
+          },
+          "cover": {
+            "type": "string",
+            "example": "http://localhost:3000/storage/covers/naruto-1.jpg",
+            "description": "URL completa ou caminho relativo da imagem da capa"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen",
+            "description": "Gênero / demografia"
+          },
+          "pages": {
+            "type": "number",
+            "example": 192,
+            "description": "Número de páginas"
+          },
+          "price": {
+            "type": "number",
+            "example": 29.9,
+            "description": "Preço de capa"
+          },
+          "userStatus": {
+            "description": "Status do livro para o usuário autenticado na requisição",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserBookStatusDto"
+              }
+            ]
+          },
+          "collection": {
+            "description": "Dados da coleção vinculada (se carregada)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CollectionResponseDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "name",
+          "description",
+          "userStatus",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateBookUploadDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Naruto Vol. 1"
+          },
+          "description": {
+            "type": "string",
+            "example": "The start of the ninja journey."
+          },
+          "collection_id": {
+            "type": "number",
+            "example": 1
+          },
+          "publishedAt": {
+            "type": "string",
+            "example": "2003-03-03"
+          },
+          "company": {
+            "type": "string",
+            "example": "Shueisha"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen"
+          },
+          "pages": {
+            "type": "number",
+            "example": 192
+          },
+          "price": {
+            "type": "number",
+            "example": 29.9
+          },
+          "cover": {
+            "type": "string",
+            "format": "binary",
+            "description": "Arquivo de imagem de capa (JPEG, PNG, WEBP - máx 2MB)"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "collection_id"
+        ]
+      },
+      "UpdateBookUploadDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Naruto Vol. 1"
+          },
+          "description": {
+            "type": "string",
+            "example": "The start of the ninja journey."
+          },
+          "collection_id": {
+            "type": "number",
+            "example": 1
+          },
+          "publishedAt": {
+            "type": "string",
+            "example": "2003-03-03"
+          },
+          "company": {
+            "type": "string",
+            "example": "Shueisha"
+          },
+          "licensor": {
+            "type": "string",
+            "example": "Panini"
+          },
+          "gender": {
+            "type": "string",
+            "example": "Shonen"
+          },
+          "pages": {
+            "type": "number",
+            "example": 192
+          },
+          "price": {
+            "type": "number",
+            "example": 29.9
+          },
+          "cover": {
+            "type": "string",
+            "format": "binary",
+            "description": "Novo arquivo de imagem de capa para substituir o anterior"
+          }
+        }
+      },
+      "UserBookResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID identificador do vínculo"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1,
+            "description": "ID do usuário proprietário"
+          },
+          "bookId": {
+            "type": "number",
+            "example": 42,
+            "description": "ID do livro"
+          },
+          "hasRead": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário já leu o livro"
+          },
+          "haveBought": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário comprou/possui o livro físico/digital"
+          },
+          "book": {
+            "description": "Dados do livro associado (quando carregado)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BookResponseDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data de criação"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "bookId",
+          "hasRead",
+          "haveBought",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpsertUserBookDto": {
+        "type": "object",
+        "properties": {
+          "bookId": {
+            "type": "number",
+            "example": 1
+          },
+          "hasRead": {
+            "type": "boolean",
+            "example": true
+          },
+          "haveBought": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "bookId"
+        ]
+      }
+    }
+  }
+}
